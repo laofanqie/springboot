@@ -1,5 +1,6 @@
-package com.fanqie;
+package com.fanqie.three.config;
 
+import com.fanqie.ThreeApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 

@@ -1,18 +1,18 @@
 package com.fanqie.three.controller;
 
-
-import com.fanqie.three.controller.entity.UserEntity;
-import com.fanqie.three.controller.jpa.UserJPA;
+import com.fanqie.three.entity.UserEntity;
+import com.fanqie.three.jpa.UserJPA;
+import com.fanqie.three.util.CommonSpecUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * Created by Administrator on 2018/10/9.
@@ -21,36 +21,42 @@ import javax.servlet.http.HttpServletRequest;
 @RequestMapping(value = "/user")
 public class LoginController {
 
-    @Autowired
+    @Resource
     private UserJPA userJPA;
 
-    @RequestMapping(value = "/login")
-    public String login(UserEntity user, HttpServletRequest request)
-    {
+    @Autowired
+    private CommonSpecUtil<UserEntity> userEntityCommonSpecUtil;
+
+    @GetMapping("/login")
+    public String login(UserEntity user, HttpServletRequest request) {
         //登录成功
         boolean flag = true;
         String result = "登录成功";
+
         //根据用户名查询用户是否存在
-        UserEntity userEntity = userJPA.findOne(new Specification<UserEntity>() {
-            @Override
-            public Predicate toPredicate(Root<UserEntity> root, CriteriaQuery<?> criteriaQuery, CriteriaBuilder criteriaBuilder) {
-                criteriaQuery.where(criteriaBuilder.equal(root.get("name"), user.getName()));
-                return null;
-            }
-        });
+
+        // 方法一
+        // UserEntity userEntity = userJPA.findFirstByName(user.getName());
+
+        // 方法二
+        Specification<UserEntity> spec = Specification.where(
+                userEntityCommonSpecUtil.equal("name", user.getName()));
+        List<UserEntity> userEntities = userJPA.findAll(spec);
+        UserEntity userEntity = CollectionUtils.isEmpty(userEntities) ? null : userEntities.get(0);
+
         //用户不存在
-        if(userEntity == null){
+        if (userEntity == null) {
             flag = false;
-            result = "用户不存在，登录失败";}
-        //密码错误
-        else if(!userEntity.getPwd().equals(user.getPwd())){
+            result = "用户不存在，登录失败";
+        } else if (!userEntity.getPwd().equals(user.getPwd())) {
+            //密码错误
             flag = false;
             result = "用户密码不相符，登录失败";
         }
         //登录成功
-        if(flag){
+        if (flag) {
             //将用户写入session
-            request.getSession().setAttribute("_session_user",userEntity);
+            request.getSession().setAttribute("_session_user", userEntity);
         }
         return result;
     }

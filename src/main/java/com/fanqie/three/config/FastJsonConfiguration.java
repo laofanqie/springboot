@@ -1,4 +1,4 @@
-package com.fanqie;
+package com.fanqie.three.config;
 
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.alibaba.fastjson.support.config.FastJsonConfig;
@@ -16,21 +16,23 @@ import java.util.List;
  * Created by Administrator on 2018/10/9.
  */
 @Configuration
-public class FastJsonConfiguration implements WebMvcConfigurer
-{
+public class FastJsonConfiguration implements WebMvcConfigurer {
     /**
      * 修改自定义消息转换器
+     *
      * @param converters 消息转换器列表
      */
     @Override
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
-        FastJsonConfig config=new FastJsonConfig();
-        config.setSerializerFeatures(SerializerFeature.DisableCircularReferenceDetect,SerializerFeature.WriteMapNullValue,SerializerFeature.WriteNullListAsEmpty,SerializerFeature.WriteNullStringAsEmpty,SerializerFeature.WriteNullBooleanAsFalse);
+        FastJsonConfig config = new FastJsonConfig();
+        config.setSerializerFeatures(SerializerFeature.DisableCircularReferenceDetect,
+                SerializerFeature.WriteMapNullValue, SerializerFeature.WriteNullListAsEmpty,
+                SerializerFeature.WriteNullStringAsEmpty, SerializerFeature.WriteNullBooleanAsFalse);
         //创建消息转换器
-        FastJsonHttpMessageConverter fastConverter=new FastJsonHttpMessageConverter();
+        FastJsonHttpMessageConverter fastConverter = new FastJsonHttpMessageConverter();
         fastConverter.setFastJsonConfig(config);
         //处理中文乱码问题
-        List<MediaType> fastMediaType=new ArrayList<>();
+        List<MediaType> fastMediaType = new ArrayList<>();
         fastMediaType.add(MediaType.APPLICATION_JSON_UTF8);
         fastConverter.setSupportedMediaTypes(fastMediaType);
         fastConverter.setFastJsonConfig(config);

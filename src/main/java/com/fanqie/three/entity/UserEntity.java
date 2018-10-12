@@ -1,4 +1,4 @@
-package com.fanqie.three.controller.entity;
+package com.fanqie.three.entity;
 
 import javax.persistence.*;
 import java.io.Serializable;
